@@ -1,0 +1,29 @@
+{
+    "name": "mapbox-gl-example",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@mapbox/mapbox-gl-language": "^1.0.1",
+        "mapbox-gl": "^2.15.0",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app"
+        ]
+    },
+    "browserslist": [
+        "defaults",
+        "not ie 11"
+    ],
+    "author": "Mapbox",
+    "license": "MIT",
+    "devDependencies": {
+        "react-scripts": "^2.1.3"
+    }
+}

@@ -40,7 +40,7 @@ export default class App extends React.PureComponent {
 
     const onDrawUpdate = ({ features }) => {
         console.log('onDrawUpdate', JSON.stringify(features[0]));
-        const url = "localhost:8080/feature"
+        const url = "http://127.0.0.1:8080/feature"
         const requestOptions = {
             method: 'POST',
             headers: {

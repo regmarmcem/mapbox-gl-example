@@ -25,10 +25,6 @@ export default class App extends React.PureComponent {
       zoom: zoom
     });
 
-    const onDrawUpdate = ({ features }) => {
-        console.log('onDrawUpdate', JSON.stringify(features[0]));
-    };
-
     const draw = new MapboxDraw({
         displayControlsDefault: false,
         // Select which mapbox-gl-draw control buttons to add to the map.
@@ -41,6 +37,19 @@ export default class App extends React.PureComponent {
         defaultMode: 'draw_polygon'
     });
     map.addControl(draw);
+
+    const onDrawUpdate = ({ features }) => {
+        console.log('onDrawUpdate', JSON.stringify(features[0]));
+        const url = "localhost:8080/feature"
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(features[0])
+        };
+        fetch(url, requestOptions);
+    };
         
     map.on('draw.create', onDrawUpdate);
     map.on('draw.delete', onDrawUpdate);

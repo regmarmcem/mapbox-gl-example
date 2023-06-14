@@ -16,14 +16,42 @@ export default class App extends React.PureComponent {
     };
     this.mapContainer = React.createRef();
   }
+
+  onDrawUpdate = ({ features }) => {
+    console.log('onDrawUpdate', JSON.stringify(features[0]));
+    console.log(JSON.stringify(this.state.features[0]));
+    const url = "http://127.0.0.1:8080/feature"
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(features[0])
+    };
+    fetch(url, requestOptions);
+  }
+
   componentDidMount() {
     const { lng, lat, zoom } = this.state;
+    const url = "http://127.0.0.1:8080/feature/list"
+    const requestOptions = {
+        method: 'GET',
+    };
+
+    fetch(url, requestOptions)
+    .then(res => res.json())
+    .then(data => this.setState({
+      features: data
+    }));
+
+    console.log(this.state.features[0]);
     const map = new mapboxgl.Map({
       container: this.mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [lng, lat],
       zoom: zoom
     });
+
 
     const draw = new MapboxDraw({
         displayControlsDefault: false,
@@ -38,25 +66,34 @@ export default class App extends React.PureComponent {
     });
     map.addControl(draw);
 
-    const onDrawUpdate = ({ features }) => {
-        console.log('onDrawUpdate', JSON.stringify(features[0]));
-        const url = "http://127.0.0.1:8080/feature"
-        const requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(features[0])
-        };
-        fetch(url, requestOptions);
-    };
         
-    map.on('draw.create', onDrawUpdate);
-    map.on('draw.delete', onDrawUpdate);
-    map.on('draw.update', onDrawUpdate);
+    map.on('draw.create', this.onDrawUpdate);
+    map.on('draw.delete', this.onDrawUpdate);
+    map.on('draw.update', this.onDrawUpdate);
 
     const language = new MapboxLanguage();
     map.addControl(language);
+
+    map.on('load', () => {
+      this.state.features.forEach(feature => {
+        console.log(feature)
+        map.addSource(feature.id, {
+            type: 'geojson',
+            data: feature
+        });
+
+        map.addLayer({
+          'id': feature.id,
+          'type': 'fill',
+          'source': feature.id,
+          'paint': {
+            'fill-color': '#fa0',
+            'fill-opacity': 0.3,
+            'fill-outline-color': '#00f',
+        }
+        });
+      });
+    });
 
     map.on('move', () => {
       this.setState({
